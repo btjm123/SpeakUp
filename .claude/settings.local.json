@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cp apps/client/.env.local.example apps/client/.env.local)",
+      "Bash(cp apps/server/.env.example apps/server/.env)",
+      "Bash(yarn dev *)",
+      "Bash(disown)",
+      "Bash(echo \"started with pid $!\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:8000/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:443/)"
+    ]
+  }
+}
