@@ -12,8 +12,15 @@ type SpeakerStats = {
   queueLeaves: number;
   timesKicked: number;
   priorityChanges: number;
+  requestFulfillmentRate: number | null;
   firstSpokeAt?: string;
   lastSpokeAt?: string;
+};
+
+type QueueWaitStats = {
+  count: number;
+  medianMs: number;
+  p90Ms: number;
 };
 
 type AnalyticsSummary = {
@@ -30,11 +37,14 @@ type AnalyticsSummary = {
   queueLeaves: number;
   kicks: number;
   priorityChanges: number;
+  distributionEvenness: number | null;
+  queueWaitStats: QueueWaitStats | null;
   topSpeakers: Array<{
     username: string;
     totalSpeaks: number;
     totalSpeakingTime: number;
     averageSpeakingTime: number;
+    requestFulfillmentRate: number | null;
   }>;
 };
 
@@ -216,6 +226,26 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
                   <div className="text-sm text-slate-600">Avg Speaking Time</div>
                   <div className="text-2xl font-bold text-orange-600">{summary.averageSpeakingTimeSeconds}s</div>
                 </div>
+
+                {/* Third row: newer derived metrics */}
+                <div className="bg-teal-50 p-4 rounded-lg border border-teal-200">
+                  <div className="text-sm text-slate-600">Airtime Evenness</div>
+                  <div className="text-2xl font-bold text-teal-600">
+                    {summary.distributionEvenness === null ? 'n/a' : summary.distributionEvenness.toFixed(2)}
+                  </div>
+                  <div className="text-xs text-slate-500 mt-1">0 = one speaker dominates, 1 = even</div>
+                </div>
+                <div className="bg-pink-50 p-4 rounded-lg border border-pink-200">
+                  <div className="text-sm text-slate-600">Queue Wait (median / p90)</div>
+                  <div className="text-2xl font-bold text-pink-600">
+                    {summary.queueWaitStats
+                      ? `${formatTime(summary.queueWaitStats.medianMs)} / ${formatTime(summary.queueWaitStats.p90Ms)}`
+                      : 'n/a'}
+                  </div>
+                  {summary.queueWaitStats && (
+                    <div className="text-xs text-slate-500 mt-1">{summary.queueWaitStats.count} completed waits</div>
+                  )}
+                </div>
               </div>
 
               {/* Top Speakers */}
@@ -236,8 +266,13 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
                             </div>
                           </div>
                         </div>
-                        <div className="text-sm text-slate-600">
-                          Avg: {formatTime(speaker.averageSpeakingTime)}
+                        <div className="text-sm text-slate-600 text-right">
+                          <div>Avg: {formatTime(speaker.averageSpeakingTime)}</div>
+                          {speaker.requestFulfillmentRate !== null && (
+                            <div className="text-xs text-slate-400">
+                              {(speaker.requestFulfillmentRate * 100).toFixed(0)}% of requests fulfilled
+                            </div>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -257,6 +292,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
                         <th className="border border-slate-300 px-4 py-2 text-center">Total Time</th>
                         <th className="border border-slate-300 px-4 py-2 text-center">Avg Time</th>
                         <th className="border border-slate-300 px-4 py-2 text-center">Queue Joins</th>
+                        <th className="border border-slate-300 px-4 py-2 text-center">Fulfillment Rate</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -267,6 +303,9 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
                           <td className="border border-slate-300 px-4 py-2 text-center">{formatTime(stat.totalSpeakingTime)}</td>
                           <td className="border border-slate-300 px-4 py-2 text-center">{formatTime(stat.averageSpeakingTime)}</td>
                           <td className="border border-slate-300 px-4 py-2 text-center">{stat.queueJoins}</td>
+                          <td className="border border-slate-300 px-4 py-2 text-center">
+                            {stat.requestFulfillmentRate === null ? '—' : `${(stat.requestFulfillmentRate * 100).toFixed(0)}%`}
+                          </td>
                         </tr>
                       ))}
                     </tbody>

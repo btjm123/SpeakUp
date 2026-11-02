@@ -65,7 +65,9 @@ r.get('/:code/summary', (c) => {
   const queueLeaves = events.filter(e => e.eventType === 'queue_leave').length;
   const kicks = events.filter(e => e.eventType === 'kicked').length;
   const priorityChanges = events.filter(e => e.eventType === 'priority_change').length;
-  
+  const distributionEvenness = analyticsService.getDistributionEvenness(roomCode);
+  const queueWaitStats = analyticsService.getQueueWaitStats(roomCode);
+
   return c.json({
     roomCode,
     uniqueSpeakers,
@@ -80,11 +82,14 @@ r.get('/:code/summary', (c) => {
     queueLeaves,
     kicks,
     priorityChanges,
+    distributionEvenness, // 0-1, null if not enough data
+    queueWaitStats, // { count, medianMs, p90Ms }, null if no fulfilled waits yet
     topSpeakers: stats.slice(0, 5).map(s => ({
       username: s.username,
       totalSpeaks: s.totalSpeaks,
       totalSpeakingTime: s.totalSpeakingTime,
       averageSpeakingTime: s.averageSpeakingTime,
+      requestFulfillmentRate: s.requestFulfillmentRate,
     })),
   });
 });

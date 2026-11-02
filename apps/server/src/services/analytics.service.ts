@@ -17,6 +17,14 @@ type SpeakerStats = {
   priorityChanges: number;
   lastSpokeAt?: Date;
   firstSpokeAt?: Date;
+  // Completed turns per queue request; null when the student never joined the queue.
+  requestFulfillmentRate: number | null;
+};
+
+type QueueWaitStats = {
+  count: number;
+  medianMs: number;
+  p90Ms: number;
 };
 
 class AnalyticsService {
@@ -85,6 +93,7 @@ class AnalyticsService {
           queueLeaves: 0,
           timesKicked: 0,
           priorityChanges: 0,
+          requestFulfillmentRate: null,
         });
       }
 
@@ -122,6 +131,9 @@ class AnalyticsService {
     statsMap.forEach((stats) => {
       if (stats.totalSpeaks > 0) {
         stats.averageSpeakingTime = stats.totalSpeakingTime / stats.totalSpeaks;
+      }
+      if (stats.queueJoins > 0) {
+        stats.requestFulfillmentRate = stats.totalSpeaks / stats.queueJoins;
       }
     });
 
@@ -161,6 +173,79 @@ class AnalyticsService {
     return (uniqueSpeakers / totalStudents) * 100;
   }
 
+  /**
+   * Normalised entropy of airtime share across every student who either
+   * spoke or joined the queue (so a student who waited but never got a
+   * turn still counts toward N, with p_i = 0). Only meaningful for N > 1
+   * with non-zero total airtime, per the definition it's drawn from.
+   */
+  getDistributionEvenness(roomCode: string): number | null {
+    const stats = this.getStats(roomCode);
+    const totalAirtime = stats.reduce((sum, s) => sum + s.totalSpeakingTime, 0);
+    const n = stats.length;
+
+    if (n <= 1 || totalAirtime <= 0) {
+      return null;
+    }
+
+    const entropy = stats.reduce((sum, s) => {
+      const p = s.totalSpeakingTime / totalAirtime;
+      return sum + (p > 0 ? p * Math.log(p) : 0);
+    }, 0);
+
+    return -entropy / Math.log(n);
+  }
+
+  /**
+   * Time between a student joining the queue and being granted the floor.
+   * Pairs each queue_join with the next speak_start for that student;
+   * a queue_join followed by queue_leave/kicked (no speak_start) is an
+   * unfulfilled wait and is excluded, not counted as zero.
+   */
+  getQueueWaitStats(roomCode: string): QueueWaitStats | null {
+    const events = this.events.get(roomCode) || [];
+    const pendingJoinAt = new Map<string, Date>();
+    const waits: number[] = [];
+
+    const sorted = [...events].sort(
+      (a, b) => a.timestamp.getTime() - b.timestamp.getTime(),
+    );
+
+    for (const event of sorted) {
+      switch (event.eventType) {
+        case 'queue_join':
+          pendingJoinAt.set(event.username, event.timestamp);
+          break;
+        case 'speak_start': {
+          const joinedAt = pendingJoinAt.get(event.username);
+          if (joinedAt) {
+            waits.push(event.timestamp.getTime() - joinedAt.getTime());
+            pendingJoinAt.delete(event.username);
+          }
+          break;
+        }
+        case 'queue_leave':
+        case 'kicked':
+          pendingJoinAt.delete(event.username);
+          break;
+      }
+    }
+
+    if (waits.length === 0) {
+      return null;
+    }
+
+    waits.sort((a, b) => a - b);
+    const percentile = (p: number) =>
+      waits[Math.min(waits.length - 1, Math.floor(p * waits.length))];
+
+    return {
+      count: waits.length,
+      medianMs: percentile(0.5),
+      p90Ms: percentile(0.9),
+    };
+  }
+
   getAllEvents(roomCode: string): SpeakerEvent[] {
     return this.events.get(roomCode) || [];
   }
@@ -176,13 +261,17 @@ class AnalyticsService {
     csv += `Unique Speakers: ${this.getUniqueSpeakers(roomCode)}\n`;
     csv += `Unique Queuers: ${this.getUniqueQueuers(roomCode)}\n`;
     csv += `Total Speaking Time: ${(this.getTotalSpeakingTime(roomCode) / 1000 / 60).toFixed(2)} minutes\n`;
+    const evenness = this.getDistributionEvenness(roomCode);
+    csv += `Distribution Evenness (0-1): ${evenness === null ? 'n/a' : evenness.toFixed(3)}\n`;
+    const waitStats = this.getQueueWaitStats(roomCode);
+    csv += `Queue Wait (median/p90, ms): ${waitStats ? `${waitStats.medianMs}/${waitStats.p90Ms}` : 'n/a'}\n`;
     csv += '\n';
 
     // Summary Statistics
     csv += '=== Summary Statistics ===\n';
-    csv += 'Username,Total Speaks,Total Speaking Time (ms),Average Speaking Time (ms),Queue Joins,Queue Leaves,Times Kicked,Priority Changes,First Spoke At,Last Spoke At\n';
+    csv += 'Username,Total Speaks,Total Speaking Time (ms),Average Speaking Time (ms),Queue Joins,Queue Leaves,Times Kicked,Priority Changes,Request Fulfillment Rate,First Spoke At,Last Spoke At\n';
     stats.forEach((stat) => {
-      csv += `${stat.username},${stat.totalSpeaks},${stat.totalSpeakingTime},${stat.averageSpeakingTime.toFixed(2)},${stat.queueJoins},${stat.queueLeaves},${stat.timesKicked},${stat.priorityChanges},${stat.firstSpokeAt?.toISOString() || ''},${stat.lastSpokeAt?.toISOString() || ''}\n`;
+      csv += `${stat.username},${stat.totalSpeaks},${stat.totalSpeakingTime},${stat.averageSpeakingTime.toFixed(2)},${stat.queueJoins},${stat.queueLeaves},${stat.timesKicked},${stat.priorityChanges},${stat.requestFulfillmentRate === null ? '' : stat.requestFulfillmentRate.toFixed(2)},${stat.firstSpokeAt?.toISOString() || ''},${stat.lastSpokeAt?.toISOString() || ''}\n`;
     });
 
     csv += '\n';
@@ -204,4 +293,4 @@ class AnalyticsService {
 }
 
 export const analyticsService = new AnalyticsService();
-export type { SpeakerEvent, SpeakerStats };
+export type { SpeakerEvent, SpeakerStats, QueueWaitStats };
