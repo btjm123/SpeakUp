@@ -7,7 +7,20 @@
       "Bash(disown)",
       "Bash(echo \"started with pid $!\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://127.0.0.1:8000/)",
-      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:443/)"
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\\\\n\" http://localhost:443/)",
+      "Bash(aws --version)",
+      "Bash(terraform --version)",
+      "Read(//Users/tanbenn/**)",
+      "Bash(brew --version)",
+      "Bash(brew list *)",
+      "Bash(brew install *)",
+      "Bash(brew tap *)",
+      "Bash(aws login *)",
+      "Bash(aws sts get-caller-identity *)",
+      "Bash(aws configure agent-toolkit *)",
+      "Bash(python3 *)",
+      "Bash(curl -LsSf https://astral.sh/uv/install.sh)",
+      "Bash(sh)"
     ]
   }
 }
