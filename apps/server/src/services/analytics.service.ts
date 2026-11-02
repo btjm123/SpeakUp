@@ -1,3 +1,5 @@
+import eventsRepository from '../repositories/events.repository';
+
 type SpeakerEvent = {
   username: string;
   eventType: 'speak_start' | 'speak_end' | 'queue_join' | 'queue_leave' | 'kicked' | 'priority_change';
@@ -66,6 +68,10 @@ class AnalyticsService {
         }
       }
     }
+
+    // Persist after duration (for speak_end) is finalised above, so the
+    // durable copy matches what getStats()/CSV export would compute.
+    eventsRepository.insertEvent(roomCode, event);
   }
 
   adjustSpeakingStartTime(roomCode: string, username: string, pauseDuration: number): void {

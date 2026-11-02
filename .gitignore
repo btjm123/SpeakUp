@@ -37,6 +37,9 @@ yarn-error.log*
 .DS_Store
 *.pem
 
+# Local SQLite analytics DB
+apps/server/data/
+
 # Terraform
 infra/terraform/.terraform/
 infra/terraform/*.tfstate
