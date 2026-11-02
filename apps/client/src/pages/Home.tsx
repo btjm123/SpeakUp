@@ -1,12 +1,14 @@
 import { Icon } from '@iconify/react';
+import Lottie from 'lottie-react';
 import { Link } from 'react-router-dom';
+import educationAnimation from '../assets/education.json';
 
 const Home: React.FC = () => {
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center gap-y-10 px-4 py-12">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center gap-y-6 px-4 py-12">
       <div className="flex flex-col items-center gap-y-2">
-        <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center shadow-sm">
-          <Icon icon="tabler:microphone" className="text-3xl" />
+        <div className="w-40 h-40">
+          <Lottie animationData={educationAnimation} loop autoplay />
         </div>
         <h1 className="text-4xl font-bold tracking-tight text-slate-900">
           SpeakUp
