@@ -60,94 +60,95 @@ const Room: React.FC = () => {
   const buttonDisabled = !connected || timeRemaining <= 0;
 
   return (
-    <div className="space-y-4 text-center">
+    <div className="min-h-screen bg-slate-50">
       <Header username={username} />
-      <RoomInfo roomCode={roomCode!} timeRemaining={timeRemaining} />
-      <hr className="w-96 mx-auto" />
+      <div className="max-w-md mx-auto px-4 py-8 flex flex-col items-center gap-y-6 text-center">
+        <RoomInfo roomCode={roomCode!} timeRemaining={timeRemaining} />
 
-      <div className="flex flex-col gap-y-4 justify-center items-center h-96">
-        {/* Priority Selector - show when off or waiting */}
-        {(state === 'off' || state === 'waiting') && (
-          <div className="flex flex-col gap-2 items-center">
-            <label className="text-sm font-medium text-gray-700">
-              {state === 'waiting' ? 'Update Urgency Level:' : 'Urgency Level:'}
-            </label>
-            <div className="flex gap-2">
-              {[
-                { value: 0, label: 'Normal', color: 'bg-gray-400' },
-                { value: 1, label: 'Medium', color: 'bg-yellow-400' },
-                { value: 2, label: 'High', color: 'bg-orange-400' },
-                { value: 3, label: 'Urgent', color: 'bg-red-400' },
-              ].map(({ value, label, color }) => (
-                <button
-                  key={value}
-                  onClick={() => setPriority(value)}
-                  className={clsx(
-                    'px-3 py-1 rounded text-sm font-medium transition-all border-2',
-                    priority === value
-                      ? `${color} text-white border-gray-700`
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300 border-transparent',
-                  )}
-                  title={label}
-                >
-                  {label}
-                </button>
-              ))}
+        <div className="w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col gap-y-6 justify-center items-center">
+          {/* Priority Selector - show when off or waiting */}
+          {(state === 'off' || state === 'waiting') && (
+            <div className="flex flex-col gap-2 items-center">
+              <label className="text-sm font-medium text-slate-500">
+                {state === 'waiting' ? 'Update Urgency Level:' : 'Urgency Level:'}
+              </label>
+              <div className="flex gap-2">
+                {[
+                  { value: 0, label: 'Normal', color: 'bg-slate-400' },
+                  { value: 1, label: 'Medium', color: 'bg-yellow-400' },
+                  { value: 2, label: 'High', color: 'bg-orange-400' },
+                  { value: 3, label: 'Urgent', color: 'bg-red-400' },
+                ].map(({ value, label, color }) => (
+                  <button
+                    key={value}
+                    onClick={() => setPriority(value)}
+                    className={clsx(
+                      'px-3 py-1 rounded-lg text-sm font-medium transition-all border-2',
+                      priority === value
+                        ? `${color} text-white border-transparent`
+                        : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-transparent',
+                    )}
+                    title={label}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+          <button
+            className={clsx(
+              'w-36 h-36 rounded-full text-white font-bold',
+              'text-6xl flex justify-center items-center transition-colors shadow-sm',
+              state === 'on' && 'bg-emerald-500',
+              state === 'waiting' && 'bg-amber-500',
+              state === 'blocked' && 'bg-slate-400',
+              state === 'off' && 'bg-indigo-600',
+            )}
+            disabled={buttonDisabled}
+            onClick={async () => {
+              if (state === 'off' || state === 'blocked') {
+                try {
+                  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                  beginStream(stream);
+                } catch (err) {
+                  console.error('[Room] Mic access failed:', err);
+                }
+              } else {
+                endStream();
+              }
+            }}
+            title={!connected ? 'Connecting to server…' : undefined}
+          >
+            <Icon icon="tabler:microphone" />
+          </button>
+
+          {state === 'blocked' && (
+            <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
+              <Icon icon="tabler:ban" className="w-5 h-5" />
+              <span>Recording blocked while instructor is speaking.</span>
+            </div>
+          )}
+
+          <p className="text-sm text-slate-400">
+            WS: {connected ? 'connected' : 'connecting…'} • State: {state}
+          </p>
+        </div>
 
         <button
           className={clsx(
-            'w-40 h-40 rounded-full text-white font-bold',
-            'text-7xl flex justify-center items-center transition-colors',
-            state === 'on' && 'bg-green-500',
-            state === 'waiting' && 'bg-orange-500',
-            state === 'blocked' && 'bg-gray-500',
-            state === 'off' && 'bg-blue-500',
+            'px-5 py-2.5 bg-rose-600 text-white font-semibold hover:bg-rose-700 rounded-xl shadow-sm transition-colors',
           )}
-          disabled={buttonDisabled}
-          onClick={async () => {
-            if (state === 'off' || state === 'blocked') {
-              try {
-                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                beginStream(stream);
-              } catch (err) {
-                console.error('[Room] Mic access failed:', err);
-              }
-            } else {
-              endStream();
-            }
+          onClick={() => {
+            try { endStream(); } catch {}
+            stores.common.setUsername(null);
+            navigate('/');
           }}
-          title={!connected ? 'Connecting to server…' : undefined}
         >
-          <Icon icon="tabler:microphone" />
+          Leave
         </button>
-
-        {state === 'blocked' && (
-          <div className="flex items-center gap-2 px-3 py-2 rounded-md bg-amber-50 border border-amber-200 text-amber-800 text-sm">
-            <Icon icon="tabler:ban" className="w-5 h-5" />
-            <span>Recording blocked while instructor is speaking.</span>
-          </div>
-        )}
-
-        <p className="text-sm opacity-70">
-          WS: {connected ? 'connected' : 'connecting…'} • State: {state}
-        </p>
       </div>
-
-      <button
-        className={clsx(
-          'px-4 py-2 bg-red-500 text-white font-semibold hover:bg-red-600 rounded-lg',
-        )}
-        onClick={() => {
-          try { endStream(); } catch {}
-          stores.common.setUsername(null);
-          navigate('/');
-        }}
-      >
-        Leave
-      </button>
     </div>
   );
 };

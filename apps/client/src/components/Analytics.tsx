@@ -134,8 +134,8 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
           'w-14 h-14 rounded-full shadow-lg flex items-center justify-center',
           'transition-all duration-200',
           isOpen
-            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-            : 'bg-white hover:bg-gray-100 text-gray-700 border-2 border-gray-300'
+            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            : 'bg-white hover:bg-slate-100 text-slate-700 border-2 border-slate-300'
         )}
         aria-label={isOpen ? 'Close analytics' : 'Open analytics'}
         title="Analytics"
@@ -145,9 +145,9 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
 
       {/* Analytics Modal - Above button when open */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-[90vw] max-w-4xl bg-white rounded-lg shadow-xl border border-gray-200 max-h-[85vh] overflow-hidden flex flex-col z-50">
+        <div className="absolute bottom-16 right-0 w-[90vw] max-w-4xl bg-white rounded-lg shadow-xl border border-slate-200 max-h-[85vh] overflow-hidden flex flex-col z-50">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+        <div className="flex items-center justify-between p-4 border-b bg-slate-50">
           <h2 className="text-2xl font-bold flex items-center gap-2">
             <Icon icon="tabler:chart-bar" className="w-6 h-6" />
             Analytics Dashboard
@@ -163,7 +163,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
             </button>
             <button
               onClick={onToggle}
-              className="px-3 py-1.5 bg-gray-300 hover:bg-gray-400 rounded text-sm"
+              className="px-3 py-1.5 bg-slate-300 hover:bg-slate-400 rounded text-sm"
             >
               Close
             </button>
@@ -174,7 +174,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
         <div className="flex-1 overflow-y-auto p-4">
           {loading && !summary && (
             <div className="flex items-center justify-center py-8">
-              <div className="text-gray-500">Loading analytics...</div>
+              <div className="text-slate-500">Loading analytics...</div>
             </div>
           )}
 
@@ -189,31 +189,31 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
               {/* Summary Cards - 3x2 Grid */}
               <div className="grid grid-cols-3 gap-4 mb-6">
                 {/* Top Row */}
-                <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-                  <div className="text-sm text-gray-600">Unique Speakers</div>
-                  <div className="text-2xl font-bold text-blue-600">{summary.uniqueSpeakers}</div>
-                  <div className="text-xs text-gray-500 mt-1">({summary.uniqueQueuers} queued)</div>
+                <div className="bg-indigo-50 p-4 rounded-lg border border-indigo-200">
+                  <div className="text-sm text-slate-600">Unique Speakers</div>
+                  <div className="text-2xl font-bold text-indigo-600">{summary.uniqueSpeakers}</div>
+                  <div className="text-xs text-slate-500 mt-1">({summary.uniqueQueuers} queued)</div>
                 </div>
                 <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-                  <div className="text-sm text-gray-600">Total Speaks</div>
+                  <div className="text-sm text-slate-600">Total Speaks</div>
                   <div className="text-2xl font-bold text-green-600">{summary.totalSpeaks}</div>
                 </div>
                 <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-                  <div className="text-sm text-gray-600">Total Speaking Time</div>
+                  <div className="text-sm text-slate-600">Total Speaking Time</div>
                   <div className="text-2xl font-bold text-purple-600">{summary.totalSpeakingTimeMinutes} min</div>
                 </div>
                 
                 {/* Bottom Row */}
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="text-sm text-gray-600">Queue Joins</div>
-                  <div className="text-2xl font-bold text-gray-700">{summary.queueJoins}</div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <div className="text-sm text-slate-600">Queue Joins</div>
+                  <div className="text-2xl font-bold text-slate-700">{summary.queueJoins}</div>
                 </div>
-                <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-                  <div className="text-sm text-gray-600">Queue Leaves</div>
-                  <div className="text-2xl font-bold text-gray-700">{summary.queueLeaves}</div>
+                <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                  <div className="text-sm text-slate-600">Queue Leaves</div>
+                  <div className="text-2xl font-bold text-slate-700">{summary.queueLeaves}</div>
                 </div>
                 <div className="bg-orange-50 p-4 rounded-lg border border-orange-200">
-                  <div className="text-sm text-gray-600">Avg Speaking Time</div>
+                  <div className="text-sm text-slate-600">Avg Speaking Time</div>
                   <div className="text-2xl font-bold text-orange-600">{summary.averageSpeakingTimeSeconds}s</div>
                 </div>
               </div>
@@ -224,19 +224,19 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
                   <h3 className="text-lg font-semibold mb-3">Top 5 Speakers</h3>
                   <div className="space-y-2">
                     {summary.topSpeakers.map((speaker, idx) => (
-                      <div key={speaker.username} className="flex items-center justify-between p-3 bg-gray-50 rounded border">
+                      <div key={speaker.username} className="flex items-center justify-between p-3 bg-slate-50 rounded border">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">
+                          <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
                             {idx + 1}
                           </div>
                           <div>
                             <div className="font-semibold">{speaker.username}</div>
-                            <div className="text-sm text-gray-600">
+                            <div className="text-sm text-slate-600">
                               {speaker.totalSpeaks} speaks • {formatTime(speaker.totalSpeakingTime)} total
                             </div>
                           </div>
                         </div>
-                        <div className="text-sm text-gray-600">
+                        <div className="text-sm text-slate-600">
                           Avg: {formatTime(speaker.averageSpeakingTime)}
                         </div>
                       </div>
@@ -249,24 +249,24 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
               <div>
                 <h3 className="text-lg font-semibold mb-3">Detailed Statistics</h3>
                 <div className="overflow-x-auto">
-                  <table className="min-w-full border-collapse border border-gray-300">
+                  <table className="min-w-full border-collapse border border-slate-300">
                     <thead>
-                      <tr className="bg-gray-100">
-                        <th className="border border-gray-300 px-4 py-2 text-left">Username</th>
-                        <th className="border border-gray-300 px-4 py-2 text-center">Speaks</th>
-                        <th className="border border-gray-300 px-4 py-2 text-center">Total Time</th>
-                        <th className="border border-gray-300 px-4 py-2 text-center">Avg Time</th>
-                        <th className="border border-gray-300 px-4 py-2 text-center">Queue Joins</th>
+                      <tr className="bg-slate-100">
+                        <th className="border border-slate-300 px-4 py-2 text-left">Username</th>
+                        <th className="border border-slate-300 px-4 py-2 text-center">Speaks</th>
+                        <th className="border border-slate-300 px-4 py-2 text-center">Total Time</th>
+                        <th className="border border-slate-300 px-4 py-2 text-center">Avg Time</th>
+                        <th className="border border-slate-300 px-4 py-2 text-center">Queue Joins</th>
                       </tr>
                     </thead>
                     <tbody>
                       {stats.map((stat) => (
-                        <tr key={stat.username} className="hover:bg-gray-50">
-                          <td className="border border-gray-300 px-4 py-2 font-medium">{stat.username}</td>
-                          <td className="border border-gray-300 px-4 py-2 text-center">{stat.totalSpeaks}</td>
-                          <td className="border border-gray-300 px-4 py-2 text-center">{formatTime(stat.totalSpeakingTime)}</td>
-                          <td className="border border-gray-300 px-4 py-2 text-center">{formatTime(stat.averageSpeakingTime)}</td>
-                          <td className="border border-gray-300 px-4 py-2 text-center">{stat.queueJoins}</td>
+                        <tr key={stat.username} className="hover:bg-slate-50">
+                          <td className="border border-slate-300 px-4 py-2 font-medium">{stat.username}</td>
+                          <td className="border border-slate-300 px-4 py-2 text-center">{stat.totalSpeaks}</td>
+                          <td className="border border-slate-300 px-4 py-2 text-center">{formatTime(stat.totalSpeakingTime)}</td>
+                          <td className="border border-slate-300 px-4 py-2 text-center">{formatTime(stat.averageSpeakingTime)}</td>
+                          <td className="border border-slate-300 px-4 py-2 text-center">{stat.queueJoins}</td>
                         </tr>
                       ))}
                     </tbody>

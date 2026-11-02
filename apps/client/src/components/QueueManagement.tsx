@@ -113,7 +113,7 @@ const QueueManagement: React.FC<Props> = ({
       case 3: return 'bg-red-100 text-red-700 border-red-300';
       case 2: return 'bg-orange-100 text-orange-700 border-orange-300';
       case 1: return 'bg-yellow-100 text-yellow-700 border-yellow-300';
-      default: return 'bg-gray-100 text-gray-700 border-gray-300';
+      default: return 'bg-slate-100 text-slate-700 border-slate-300';
     }
   };
 
@@ -126,8 +126,8 @@ const QueueManagement: React.FC<Props> = ({
           'w-14 h-14 rounded-full shadow-lg flex items-center justify-center',
           'transition-all duration-200',
           isOpen
-            ? 'bg-blue-600 hover:bg-blue-700 text-white'
-            : 'bg-white hover:bg-gray-100 text-gray-700 border-2 border-gray-300'
+            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            : 'bg-white hover:bg-slate-100 text-slate-700 border-2 border-slate-300'
         )}
         aria-label={isOpen ? 'Close queue' : 'Open queue'}
         title={`Queue (${queueInfo.queueSize})`}
@@ -145,26 +145,26 @@ const QueueManagement: React.FC<Props> = ({
 
       {/* Queue Panel */}
       {isOpen && (
-        <div className="absolute bottom-16 right-0 w-80 bg-white rounded-lg shadow-xl border border-gray-200 max-h-96 overflow-hidden flex flex-col">
+        <div className="absolute bottom-16 right-0 w-80 bg-white rounded-lg shadow-xl border border-slate-200 max-h-96 overflow-hidden flex flex-col">
           {/* Header */}
-          <div className="px-4 py-3 bg-gray-50 border-b border-gray-200">
+          <div className="px-4 py-3 bg-slate-50 border-b border-slate-200">
             <div className="flex items-center justify-between mb-2">
               <div>
-                <h3 className="font-semibold text-gray-900">Speaker Queue</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="font-semibold text-slate-900">Speaker Queue</h3>
+                <p className="text-sm text-slate-500">
                   {queueInfo.queueSize} {queueInfo.queueSize === 1 ? 'person' : 'people'} waiting
                 </p>
               </div>
               {onSetSortMode && (
-                <div className="flex rounded-lg overflow-hidden border border-gray-300">
+                <div className="flex rounded-lg overflow-hidden border border-slate-300">
                   <button
                     onClick={() => onSetSortMode('fifo')}
                     className={clsx(
                       'px-3 py-1.5 text-sm font-medium transition-colors',
                       'flex items-center gap-1.5',
                       sortMode === 'fifo'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-100'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white text-slate-600 hover:bg-slate-100'
                     )}
                     title="Sort by join time (first in, first out)"
                   >
@@ -175,10 +175,10 @@ const QueueManagement: React.FC<Props> = ({
                     onClick={() => onSetSortMode('priority')}
                     className={clsx(
                       'px-3 py-1.5 text-sm font-medium transition-colors',
-                      'flex items-center gap-1.5 border-l border-gray-300',
+                      'flex items-center gap-1.5 border-l border-slate-300',
                       sortMode === 'priority'
-                        ? 'bg-blue-600 text-white'
-                        : 'bg-white text-gray-600 hover:bg-gray-100'
+                        ? 'bg-indigo-600 text-white'
+                        : 'bg-white text-slate-600 hover:bg-slate-100'
                     )}
                     title="Sort by priority level"
                   >
@@ -193,7 +193,7 @@ const QueueManagement: React.FC<Props> = ({
           {/* Queue List */}
           <div className="flex-1 overflow-y-auto p-4">
             {allUsers.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
+              <div className="text-center text-slate-500 py-8">
                 <Icon icon="tabler:users-off" className="w-12 h-12 mx-auto mb-2 opacity-50" />
                 <p className="text-sm">No one in the queue</p>
               </div>
@@ -212,9 +212,9 @@ const QueueManagement: React.FC<Props> = ({
                       'flex items-center justify-between p-3 rounded-lg border transition-colors',
                       user.isCurrentSpeaker
                         ? 'bg-green-50 border-green-200'
-                        : 'bg-gray-50 border-gray-200 hover:bg-gray-100',
+                        : 'bg-slate-50 border-slate-200 hover:bg-slate-100',
                       draggedUser === user.username && 'opacity-50',
-                      dragOverIndex === index && !user.isCurrentSpeaker && 'border-blue-400 border-2',
+                      dragOverIndex === index && !user.isCurrentSpeaker && 'border-indigo-400 border-2',
                       !user.isCurrentSpeaker && onMoveToPosition && 'cursor-move'
                     )}
                   >
@@ -229,10 +229,10 @@ const QueueManagement: React.FC<Props> = ({
                           {onMoveToPosition && (
                             <Icon
                               icon="tabler:grip-vertical"
-                              className="w-4 h-4 text-gray-400 flex-shrink-0 cursor-move"
+                              className="w-4 h-4 text-slate-400 flex-shrink-0 cursor-move"
                             />
                           )}
-                          <span className="text-gray-400 font-semibold text-sm w-6 text-center flex-shrink-0">
+                          <span className="text-slate-400 font-semibold text-sm w-6 text-center flex-shrink-0">
                             {queueInfo.currentSpeaker ? index : index + 1}
                           </span>
                         </>
@@ -241,7 +241,7 @@ const QueueManagement: React.FC<Props> = ({
                         <span
                           className={clsx(
                             'font-medium truncate',
-                            user.isCurrentSpeaker ? 'text-green-900' : 'text-gray-900'
+                            user.isCurrentSpeaker ? 'text-green-900' : 'text-slate-900'
                           )}
                           title={user.username}
                         >
@@ -274,9 +274,9 @@ const QueueManagement: React.FC<Props> = ({
                             className={clsx(
                               'p-1 rounded transition-colors flex-shrink-0',
                               index === (queueInfo.currentSpeaker ? 1 : 0)
-                                ? 'text-gray-300 cursor-not-allowed'
-                                : 'hover:bg-blue-100 text-blue-600 hover:text-blue-700',
-                              'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1'
+                                ? 'text-slate-300 cursor-not-allowed'
+                                : 'hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700',
+                              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1'
                             )}
                             aria-label={`Move ${user.username} up in queue`}
                             title="Move up"
@@ -289,9 +289,9 @@ const QueueManagement: React.FC<Props> = ({
                             className={clsx(
                               'p-1 rounded transition-colors flex-shrink-0',
                               index === allUsers.length - 1
-                                ? 'text-gray-300 cursor-not-allowed'
-                                : 'hover:bg-blue-100 text-blue-600 hover:text-blue-700',
-                              'focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1'
+                                ? 'text-slate-300 cursor-not-allowed'
+                                : 'hover:bg-indigo-100 text-indigo-600 hover:text-indigo-700',
+                              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-1'
                             )}
                             aria-label={`Move ${user.username} down in queue`}
                             title="Move down"

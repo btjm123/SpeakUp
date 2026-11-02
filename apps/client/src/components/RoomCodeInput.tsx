@@ -96,10 +96,11 @@ const RoomCodeInput: React.FC<Props> = ({
             autoComplete="off"
             autoCorrect="off"
             className={clsx(
-              'px-3 py-2 rounded-lg border border-gray-300',
-              'font-mono text-3xl',
-              'bg-gray-200 text-center rounded-xl',
-              'tracking-wider',
+              'w-12 h-14 rounded-xl border border-slate-300',
+              'font-mono text-2xl',
+              'bg-slate-50 text-center',
+              'focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 focus:bg-white',
+              'transition-colors',
             )}
             defaultValue={defaultValue?.[i] ?? ''}
             maxLength={1}
@@ -170,13 +171,13 @@ const RoomCodeInput: React.FC<Props> = ({
           />
         ))}
       </div>
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p className="text-sm text-rose-600 text-center">{error}</p>}
       {submitText && (
         <button
           className={clsx(
-            'px-4 py-2 bg-blue-500 text-white',
-            'rounded-lg font-medium',
-            'hover:bg-blue-600 w-96 rounded-xl',
+            'px-4 py-2.5 bg-indigo-600 text-white',
+            'rounded-xl font-semibold shadow-sm',
+            'hover:bg-indigo-700 transition-colors w-full',
           )}
           onClick={handleSubmit}
         >

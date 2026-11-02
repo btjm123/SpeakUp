@@ -14,77 +14,84 @@ const Download: React.FC = () => {
 
   const navigate = useNavigate();
   return (
-    <div
-      className={clsx(
-        'w-full h-screen flex items-center justify-center',
-        'flex-col gap-y-8',
-      )}
-    >
-      <p className="text-4xl font-semibold">My Recent Recordings</p>
-      <hr className="w-96" />
-      {recentRooms.length === 0 ? (
-        <p className="text-lg">No recent recordings</p>
-      ) : (
-        <ul className="flex flex-col gap-y-3 w-96">
-          <p className="text-gray-400 italic text-center select-none">
-            Click to download as ZIP file
-          </p>
-          {recentRooms.map((room) => (
-            <li
-              key={room}
+    <div className="w-full min-h-screen flex items-center justify-center px-4 py-12">
+      <div className="w-full max-w-md flex flex-col gap-y-6">
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col items-center gap-y-6">
+          <div className="flex flex-col items-center gap-y-1">
+            <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-2">
+              <Icon icon="tabler:download" className="text-2xl" />
+            </div>
+            <p className="text-2xl font-bold text-slate-900">My Recent Recordings</p>
+          </div>
+
+          {recentRooms.length === 0 ? (
+            <p className="text-sm text-slate-400 py-2">No recent recordings</p>
+          ) : (
+            <div className="w-full flex flex-col gap-y-3">
+              <p className="text-sm text-slate-400 italic text-center select-none">
+                Click to download as ZIP file
+              </p>
+              <ul className="flex flex-col gap-y-2">
+                {recentRooms.map((room) => (
+                  <li
+                    key={room}
+                    className={clsx(
+                      'bg-slate-50 hover:bg-indigo-50 border border-slate-200 hover:border-indigo-200 rounded-xl',
+                      'w-full px-4 py-3 transition-colors',
+                      'cursor-pointer',
+                      'flex justify-between items-center',
+                      'group',
+                    )}
+                    onClick={() => storageApi.downloadRecordings(room)}
+                  >
+                    <span className="font-medium text-slate-700">Room {room}</span>
+                    <Icon
+                      className={clsx(
+                        'text-xl text-slate-400',
+                        'transition-colors duration-200',
+                        'group-hover:text-indigo-600',
+                      )}
+                      icon="tabler:download"
+                    />
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          {recentRooms.length > 0 && (
+            <button
               className={clsx(
-                'bg-gray-200 hover:bg-gray-300 rounded-xl',
-                'w-full px-4 py-3',
-                'cursor-pointer',
-                'flex justify-between items-center',
-                'group',
+                'bg-rose-600 hover:bg-rose-700 text-white',
+                'flex gap-x-2 items-center',
+                'px-4 py-2 rounded-xl font-semibold shadow-sm transition-colors',
               )}
-              onClick={() => storageApi.downloadRecordings(room)}
+              onClick={() => {
+                if (
+                  window.confirm('Are you sure you want to clear all recordings?')
+                ) {
+                  stores.rooms.clearRecentRooms();
+                  refreshRooms();
+                }
+              }}
             >
-              <span>Room {room}</span>
-              <Icon
-                className={clsx(
-                  'text-xl',
-                  'transition-colors duration-500',
-                  'group-hover:text-blue-600',
-                )}
-                icon="tabler:download"
-              />
-            </li>
-          ))}
-        </ul>
-      )}
-      {recentRooms.length > 0 && (
+              <Icon icon="tabler:trash" className="text-xl" />
+              <span>Clear All</span>
+            </button>
+          )}
+        </div>
+
         <button
           className={clsx(
-            'bg-red-500 hover:bg-red-600 text-white',
-            'flex gap-x-2 items-center',
-            'px-4 py-2 rounded-lg font-semibold',
+            'px-4 py-2.5 rounded-xl font-medium',
+            'text-slate-500 hover:text-slate-700 hover:bg-slate-100',
+            'transition-colors',
           )}
-          onClick={() => {
-            if (
-              window.confirm('Are you sure you want to clear all recordings?')
-            ) {
-              stores.rooms.clearRecentRooms();
-              refreshRooms();
-            }
-          }}
+          onClick={() => navigate(-1)}
         >
-          <Icon icon="tabler:trash" className="text-xl" />
-          <span>Clear All</span>
+          Back
         </button>
-      )}
-      <button
-        className={clsx(
-          'px-4 py-2 border border-red-500',
-          'font-medium text-red-500 hover:text-white',
-          'transition-colors duration-500',
-          'hover:bg-red-600 rounded-xl',
-        )}
-        onClick={() => navigate(-1)}
-      >
-        Back
-      </button>
+      </div>
     </div>
   );
 };

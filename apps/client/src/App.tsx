@@ -20,7 +20,11 @@ const App: React.FC = () => {
       .catch(() => setIsLoading(false));
   }, []);
   if (isLoading) {
-    return <div>Loading&hellip;</div>;
+    return (
+      <div className="w-full h-screen flex items-center justify-center text-slate-400">
+        Loading&hellip;
+      </div>
+    );
   }
 
   return <RouterProvider router={router} />;

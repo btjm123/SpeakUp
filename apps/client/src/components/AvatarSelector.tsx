@@ -96,7 +96,7 @@ const AvatarSelector: React.FC<Props> = ({ onSubmit, onCancel }) => {
       </div>
       <div className="flex gap-x-2">
         <input
-          className="text-lg font-medium bg-gray-100 rounded-lg px-4 py-2 text-gray-500"
+          className="text-lg font-medium bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
           type="text"
           value={value}
           onChange={handleChange}
@@ -105,20 +105,20 @@ const AvatarSelector: React.FC<Props> = ({ onSubmit, onCancel }) => {
         />
         <button
           className={clsx(
-            'text-2xl text-white rounded-lg px-3 py-2',
-            'bg-blue-500 hover:bg-blue-700',
+            'text-xl text-slate-500 rounded-xl px-3 py-2 border border-slate-200',
+            'hover:text-indigo-600 hover:border-indigo-300 transition-colors',
           )}
           onClick={() => setUsername(generateName())}
         >
-          <Icon icon="tabler:refresh" className="text-white" />
+          <Icon icon="tabler:refresh" />
         </button>
       </div>
       <div className="flex gap-x-2">
         <button
           className={clsx(
-            'px-4 py-2 bg-blue-500 text-white',
-            'rounded-lg font-medium',
-            'hover:bg-blue-600 rounded-xl',
+            'px-4 py-2.5 bg-indigo-600 text-white',
+            'rounded-xl font-semibold shadow-sm',
+            'hover:bg-indigo-700 transition-colors',
           )}
           onClick={handleSubmit}
         >
@@ -127,9 +127,9 @@ const AvatarSelector: React.FC<Props> = ({ onSubmit, onCancel }) => {
         {onCancel && (
           <button
             className={clsx(
-              'px-4 py-2 bg-red-500 text-white',
-              'rounded-lg font-medium',
-              'hover:bg-red-600 rounded-xl',
+              'px-4 py-2.5 text-slate-500',
+              'rounded-xl font-medium',
+              'hover:bg-slate-100 hover:text-slate-700 transition-colors',
             )}
             onClick={onCancel}
           >

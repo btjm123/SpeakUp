@@ -90,17 +90,17 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
   }, [listening, cooldown, skip]);
 
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center gap-y-4">
+    <div className="w-full min-h-screen flex flex-col items-center gap-y-6 px-4 py-12">
       <RoomInfo roomCode={roomCode} timeRemaining={timeRemaining} />
-      <hr className="w-96 mx-auto" />
-      <div className="flex flex-col gap-y-4 justify-center items-center h-96">
-        <div className="flex gap-2">
+
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col gap-y-6 items-center">
+        <div className="flex rounded-lg overflow-hidden border border-slate-200">
           <button
             className={clsx(
-              'px-3 py-1 rounded text-sm font-semibold',
+              'px-4 py-1.5 text-sm font-semibold transition-colors',
               audioPipelineMode === 'live'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700',
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white text-slate-600 hover:bg-slate-50',
             )}
             onClick={() => setAudioPipelineMode('live')}
           >
@@ -108,10 +108,10 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
           </button>
           <button
             className={clsx(
-              'px-3 py-1 rounded text-sm font-semibold',
+              'px-4 py-1.5 text-sm font-semibold transition-colors border-l border-slate-200',
               audioPipelineMode === 'prerecord'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-200 text-gray-700',
+                ? 'bg-indigo-600 text-white'
+                : 'bg-white text-slate-600 hover:bg-slate-50',
             )}
             onClick={() => setAudioPipelineMode('prerecord')}
           >
@@ -120,10 +120,10 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
         </div>
         <button
           className={clsx(
-            'w-40 h-40 rounded-full text-white font-bold',
-            'text-7xl flex justify-center items-center',
-            'transition-colors duration-500',
-            listening ? 'bg-green-500' : 'bg-red-500',
+            'w-36 h-36 rounded-full text-white font-bold',
+            'text-6xl flex justify-center items-center shadow-sm',
+            'transition-colors duration-300',
+            listening ? 'bg-emerald-500' : 'bg-rose-500',
           )}
           onClick={handleClick}
           aria-label={listening ? 'Stop listening' : 'Start listening'}
@@ -131,16 +131,16 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
           <Icon icon={listening ? 'tabler:volume' : 'tabler:volume-off'} />
         </button>
 
-        <p>{listening ? <>Tuning in&hellip;</> : 'Everyone is muted'}</p>
+        <p className="text-slate-500">{listening ? <>Tuning in&hellip;</> : 'Everyone is muted'}</p>
 
         {/* Skip Speaker button */}
         <button
           type="button"
           className={clsx(
-            'px-5 py-2.5 rounded-lg font-semibold transition-all duration-200 shadow-sm border',
+            'px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-sm border',
             listening && !cooldown
               ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600'
-              : 'bg-gray-100 text-gray-400 border-gray-200 cursor-not-allowed'
+              : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
           )}
           disabled={!listening || cooldown}
           onClick={handleSkip}
@@ -153,15 +153,16 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
             <span>Skip speaker (S)</span>
           </div>
         </button>
+
+        {/* Hint who we're hearing */}
+        {listening && playing && <p className="text-sm text-slate-400">Listening to {playing}&hellip;</p>}
+
+        <audio ref={ref} preload="auto" />
       </div>
 
-      {/* Hint who we're hearing */}
-      {listening && playing && <p>Listening to {playing}&hellip;</p>}
-
-      <audio ref={ref} preload="auto" />
       <button
         type="button"
-        className="px-5 py-2.5 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-all duration-200 shadow-sm border border-red-600"
+        className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl transition-colors shadow-sm"
         onClick={() => navigate('/')}
       >
         Leave
@@ -206,7 +207,7 @@ const Listen: React.FC = () => {
 
   if (!room) {
     return (
-      <div className="w-full h-screen flex flex-col justify-center items-center gap-y-4">
+      <div className="w-full h-screen flex flex-col justify-center items-center gap-y-4 text-slate-400">
         <p>Loading&hellip;</p>
       </div>
     );
