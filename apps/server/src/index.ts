@@ -54,7 +54,7 @@ app.use('*', async (c, next) => {
         method: c.req.method,
         path: c.req.routePath,
         statusCode: 500,
-        durationMs: Math.round((performance.now() - start) * 100) / 100,
+        durationMs: performance.now() - start,
         timestamp: new Date(),
       });
     } catch {
@@ -67,7 +67,7 @@ app.use('*', async (c, next) => {
       method: c.req.method,
       path: c.req.routePath,
       statusCode: c.res.status,
-      durationMs: Math.round((performance.now() - start) * 100) / 100,
+      durationMs: performance.now() - start,
       timestamp: new Date(),
     });
   } catch {
