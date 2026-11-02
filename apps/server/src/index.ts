@@ -23,6 +23,7 @@ const allowed = new Set<string>([
   'https://speakupfyp.space',
   'https://www.speakupfyp.space',
   'https://speakup-bfy.pages.dev',
+  'https://speakup.benntan.com',
   'https://localhost:443',
   'https://192.168.31.151',
   'http://localhost:443',
