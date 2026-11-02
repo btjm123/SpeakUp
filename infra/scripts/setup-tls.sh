@@ -18,7 +18,7 @@ COMMAND_ID=$(aws ssm send-command \
   --region "$REGION" \
   --instance-ids "$INSTANCE_ID" \
   --document-name "AWS-RunShellScript" \
-  --parameters "commands=[\"certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m admin@$DOMAIN --redirect\"]" \
+  --parameters "commands=[\"certbot --nginx -d $DOMAIN --non-interactive --agree-tos -m benn.tan@u.nus.edu --redirect\"]" \
   --query "Command.CommandId" --output text)
 
 echo "Command ID: $COMMAND_ID (waiting for result)..."

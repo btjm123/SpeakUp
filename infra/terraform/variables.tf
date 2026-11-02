@@ -35,9 +35,9 @@ variable "api_subdomain" {
 }
 
 variable "instance_type" {
-  description = "EC2 instance type for the server. t3.micro is Free Tier eligible for 12 months on a new account."
+  description = "EC2 instance type for the server. t3.small (not Free Tier eligible) to fit the app + Grafana + SQLite comfortably."
   type        = string
-  default     = "t3.micro"
+  default     = "t3.small"
 }
 
 variable "github_repo_url" {
