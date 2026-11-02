@@ -738,7 +738,13 @@ export const useWebRTCAudio = (wsEndpoint: string) => {
         } else if (data.type === 'from') {
           setPlaying(data.name || 'Speaker');
           if (FORCE_MEDIA_RECORDER) {
-            providerRef.current?.reinitialize();
+            // Don't rebuild the MSE pipeline here either — same reasoning as the
+            // 'clear' handler below. CLEAR and FROM fire together for every new
+            // speaker (server sends CLEAR -> FROM -> CTS), so rebuilding on FROM
+            // reintroduces the exact ERR_FILE_NOT_FOUND/dropped-first-utterance
+            // bug that CLEAR was already fixed to avoid: it swaps audioEl.src to
+            // a brand-new blob URL right as that speaker's first chunks arrive,
+            // abandoning whatever the previous MediaSource had (or hadn't) buffered.
           } else {
             gotTrackForSpeakerRef.current = false;
             if (fallbackTimerRef.current) clearTimeout(fallbackTimerRef.current);
