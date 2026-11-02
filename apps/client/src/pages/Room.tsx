@@ -59,13 +59,22 @@ const Room: React.FC = () => {
 
   const buttonDisabled = !connected || timeRemaining <= 0;
 
+  const stateAccent = clsx(
+    state === 'on' && 'from-emerald-400 to-teal-500',
+    state === 'waiting' && 'from-amber-400 to-orange-500',
+    state === 'blocked' && 'from-slate-300 to-slate-400',
+    state === 'off' && 'from-indigo-500 to-fuchsia-500',
+  );
+
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen">
       <Header username={username} />
-      <div className="max-w-md mx-auto px-4 py-8 flex flex-col items-center gap-y-6 text-center">
+      <div className="max-w-md mx-auto px-4 py-8 flex flex-col items-center gap-y-6 text-center animate-fade-up">
         <RoomInfo roomCode={roomCode!} timeRemaining={timeRemaining} />
 
-        <div className="w-full bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col gap-y-6 justify-center items-center">
+        <div className="relative w-full overflow-hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col gap-y-6 justify-center items-center">
+          <div className={clsx('absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r', stateAccent)} />
+
           {/* Priority Selector - show when off or waiting */}
           {(state === 'off' || state === 'waiting') && (
             <div className="flex flex-col gap-2 items-center">
@@ -74,22 +83,23 @@ const Room: React.FC = () => {
               </label>
               <div className="flex gap-2">
                 {[
-                  { value: 0, label: 'Normal', color: 'bg-slate-400' },
-                  { value: 1, label: 'Medium', color: 'bg-yellow-400' },
-                  { value: 2, label: 'High', color: 'bg-orange-400' },
-                  { value: 3, label: 'Urgent', color: 'bg-red-400' },
-                ].map(({ value, label, color }) => (
+                  { value: 0, label: 'Normal', icon: 'tabler:circle', color: 'from-slate-400 to-slate-500' },
+                  { value: 1, label: 'Medium', icon: 'tabler:alert-circle', color: 'from-yellow-400 to-amber-500' },
+                  { value: 2, label: 'High', icon: 'tabler:flame', color: 'from-orange-400 to-orange-600' },
+                  { value: 3, label: 'Urgent', icon: 'tabler:alert-triangle', color: 'from-red-500 to-rose-600' },
+                ].map(({ value, label, icon, color }) => (
                   <button
                     key={value}
                     onClick={() => setPriority(value)}
                     className={clsx(
-                      'px-3 py-1 rounded-lg text-sm font-medium transition-all border-2',
+                      'px-3 py-1.5 rounded-lg text-sm font-medium transition-all border-2 flex items-center gap-1.5',
                       priority === value
-                        ? `${color} text-white border-transparent`
+                        ? `bg-gradient-to-br ${color} text-white border-transparent shadow-sm`
                         : 'bg-slate-100 text-slate-600 hover:bg-slate-200 border-transparent',
                     )}
                     title={label}
                   >
+                    <Icon icon={icon} className="text-base" />
                     {label}
                   </button>
                 ))}
@@ -97,32 +107,41 @@ const Room: React.FC = () => {
             </div>
           )}
 
-          <button
-            className={clsx(
-              'w-36 h-36 rounded-full text-white font-bold',
-              'text-6xl flex justify-center items-center transition-colors shadow-sm',
-              state === 'on' && 'bg-emerald-500',
-              state === 'waiting' && 'bg-amber-500',
-              state === 'blocked' && 'bg-slate-400',
-              state === 'off' && 'bg-indigo-600',
+          <div className="relative w-36 h-36 flex items-center justify-center">
+            {(state === 'on' || state === 'waiting') && (
+              <>
+                <span className={clsx('absolute inset-0 rounded-full bg-gradient-to-br animate-pulse-ring', stateAccent)} />
+                <span
+                  className={clsx('absolute inset-0 rounded-full bg-gradient-to-br animate-pulse-ring', stateAccent)}
+                  style={{ animationDelay: '0.6s' }}
+                />
+              </>
             )}
-            disabled={buttonDisabled}
-            onClick={async () => {
-              if (state === 'off' || state === 'blocked') {
-                try {
-                  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-                  beginStream(stream);
-                } catch (err) {
-                  console.error('[Room] Mic access failed:', err);
+            <button
+              className={clsx(
+                'relative w-36 h-36 rounded-full text-white font-bold bg-gradient-to-br',
+                'text-6xl flex justify-center items-center transition-all shadow-lg',
+                stateAccent,
+                state === 'off' && !buttonDisabled && 'animate-breathe',
+              )}
+              disabled={buttonDisabled}
+              onClick={async () => {
+                if (state === 'off' || state === 'blocked') {
+                  try {
+                    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                    beginStream(stream);
+                  } catch (err) {
+                    console.error('[Room] Mic access failed:', err);
+                  }
+                } else {
+                  endStream();
                 }
-              } else {
-                endStream();
-              }
-            }}
-            title={!connected ? 'Connecting to server…' : undefined}
-          >
-            <Icon icon="tabler:microphone" />
-          </button>
+              }}
+              title={!connected ? 'Connecting to server…' : undefined}
+            >
+              <Icon icon="tabler:microphone" />
+            </button>
+          </div>
 
           {state === 'blocked' && (
             <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-800 text-sm">
@@ -138,7 +157,7 @@ const Room: React.FC = () => {
 
         <button
           className={clsx(
-            'px-5 py-2.5 bg-rose-600 text-white font-semibold hover:bg-rose-700 rounded-xl shadow-sm transition-colors',
+            'px-5 py-2.5 bg-gradient-to-br from-rose-500 to-rose-600 text-white font-semibold hover:brightness-105 rounded-xl shadow-sm transition-all',
           )}
           onClick={() => {
             try { endStream(); } catch {}

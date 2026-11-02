@@ -21,11 +21,11 @@ const Create: React.FC = () => {
 
   const navigate = useNavigate();
   return (
-    <div className="w-full min-h-screen flex items-center justify-center px-4 py-12">
+    <div className="w-full min-h-screen flex items-center justify-center px-4 py-12 animate-fade-up">
       <div className="w-full max-w-md flex flex-col gap-y-6">
         <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col items-center gap-y-6">
           <div className="flex flex-col items-center gap-y-1">
-            <div className="w-12 h-12 rounded-xl bg-indigo-600 text-white flex items-center justify-center mb-2">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center mb-2">
               <Icon icon="tabler:chalkboard" className="text-2xl" />
             </div>
             <p className="text-2xl font-bold text-slate-900">Create a Room</p>
@@ -34,7 +34,7 @@ const Create: React.FC = () => {
           <button
             className={clsx(
               'px-4 py-3 rounded-xl font-semibold w-full transition-colors',
-              'bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm',
+              'bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:brightness-105 text-white shadow-sm transition-all',
             )}
             onClick={async () => {
               const roomCode = await createRoom();

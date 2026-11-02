@@ -144,7 +144,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
           'w-14 h-14 rounded-full shadow-lg flex items-center justify-center',
           'transition-all duration-200',
           isOpen
-            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:brightness-105 text-white'
             : 'bg-white hover:bg-slate-100 text-slate-700 border-2 border-slate-300'
         )}
         aria-label={isOpen ? 'Close analytics' : 'Open analytics'}
@@ -256,7 +256,7 @@ const Analytics: React.FC<AnalyticsProps> = ({ roomCode, isOpen, onToggle }) => 
                     {summary.topSpeakers.map((speaker, idx) => (
                       <div key={speaker.username} className="flex items-center justify-between p-3 bg-slate-50 rounded border">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold">
+                          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center font-bold">
                             {idx + 1}
                           </div>
                           <div>

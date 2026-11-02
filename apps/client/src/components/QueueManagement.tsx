@@ -126,7 +126,7 @@ const QueueManagement: React.FC<Props> = ({
           'w-14 h-14 rounded-full shadow-lg flex items-center justify-center',
           'transition-all duration-200',
           isOpen
-            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:brightness-105 text-white'
             : 'bg-white hover:bg-slate-100 text-slate-700 border-2 border-slate-300'
         )}
         aria-label={isOpen ? 'Close queue' : 'Open queue'}
@@ -163,7 +163,7 @@ const QueueManagement: React.FC<Props> = ({
                       'px-3 py-1.5 text-sm font-medium transition-colors',
                       'flex items-center gap-1.5',
                       sortMode === 'fifo'
-                        ? 'bg-indigo-600 text-white'
+                        ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white'
                         : 'bg-white text-slate-600 hover:bg-slate-100'
                     )}
                     title="Sort by join time (first in, first out)"
@@ -177,7 +177,7 @@ const QueueManagement: React.FC<Props> = ({
                       'px-3 py-1.5 text-sm font-medium transition-colors',
                       'flex items-center gap-1.5 border-l border-slate-300',
                       sortMode === 'priority'
-                        ? 'bg-indigo-600 text-white'
+                        ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white'
                         : 'bg-white text-slate-600 hover:bg-slate-100'
                     )}
                     title="Sort by priority level"

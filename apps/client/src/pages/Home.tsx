@@ -5,7 +5,7 @@ import educationAnimation from '../assets/education.json';
 
 const Home: React.FC = () => {
   return (
-    <div className="w-full min-h-screen flex flex-col justify-center items-center gap-y-6 px-4 py-12">
+    <div className="w-full min-h-screen flex flex-col justify-center items-center gap-y-6 px-4 py-12 animate-fade-up">
       <div className="flex flex-col items-center gap-y-2">
         <div className="w-40 h-40">
           <Lottie animationData={educationAnimation} loop autoplay />
@@ -23,16 +23,20 @@ const Home: React.FC = () => {
         <div className="flex gap-x-4 w-full">
           <Link
             to="/join"
-            className="flex-1 aspect-square rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex flex-col items-center justify-center gap-y-2 text-slate-700"
+            className="flex-1 aspect-square rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all flex flex-col items-center justify-center gap-y-3 text-slate-700"
           >
-            <Icon icon="tabler:school" className="text-3xl text-indigo-600" />
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center">
+              <Icon icon="tabler:school" className="text-2xl" />
+            </div>
             <span className="text-lg font-semibold">Student</span>
           </Link>
           <Link
             to="/create"
-            className="flex-1 aspect-square rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:bg-indigo-50 transition-colors flex flex-col items-center justify-center gap-y-2 text-slate-700"
+            className="flex-1 aspect-square rounded-xl bg-slate-50 border border-slate-200 hover:border-indigo-300 hover:shadow-md transition-all flex flex-col items-center justify-center gap-y-3 text-slate-700"
           >
-            <Icon icon="tabler:chalkboard" className="text-3xl text-indigo-600" />
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center">
+              <Icon icon="tabler:chalkboard" className="text-2xl" />
+            </div>
             <span className="text-lg font-semibold">Instructor</span>
           </Link>
         </div>

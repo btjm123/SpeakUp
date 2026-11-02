@@ -105,7 +105,7 @@ function ContactForm() {
 
           <button
             type="submit"
-            className="w-full bg-indigo-600 text-white py-2.5 rounded-lg font-semibold shadow-sm hover:bg-indigo-700 transition-colors"
+            className="w-full bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white py-2.5 rounded-lg font-semibold shadow-sm hover:brightness-105 transition-all"
           >
             Send Message
           </button>

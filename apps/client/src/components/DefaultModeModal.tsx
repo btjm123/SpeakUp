@@ -25,7 +25,7 @@ const DefaultModeModal: React.FC<Props> = ({
           'w-14 h-14 rounded-full shadow-lg flex items-center justify-center',
           'transition-all duration-200',
           isOpen
-            ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+            ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 hover:brightness-105 text-white'
             : 'bg-white hover:bg-slate-100 text-slate-700 border-2 border-slate-300'
         )}
         aria-label={isOpen ? 'Close settings' : 'Open settings'}
@@ -63,7 +63,7 @@ const DefaultModeModal: React.FC<Props> = ({
                   'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                   'border',
                   defaultMode === 'webrtc'
-                    ? 'bg-indigo-600 text-white border-indigo-700'
+                    ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white border-transparent'
                     : 'bg-white text-slate-700 border-slate-300 hover:border-slate-400 hover:bg-slate-50'
                 )}
                 onClick={() => onDefaultModeChange('webrtc')}
@@ -79,7 +79,7 @@ const DefaultModeModal: React.FC<Props> = ({
                   'flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200',
                   'border',
                   defaultMode === 'mediarecorder'
-                    ? 'bg-indigo-600 text-white border-indigo-700'
+                    ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white border-transparent'
                     : 'bg-white text-slate-700 border-slate-300 hover:border-slate-400 hover:bg-slate-50'
                 )}
                 onClick={() => onDefaultModeChange('mediarecorder')}

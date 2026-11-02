@@ -90,16 +90,30 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
   }, [listening, cooldown, skip]);
 
   return (
-    <div className="w-full min-h-screen flex flex-col items-center gap-y-6 px-4 py-12">
+    <div className="w-full min-h-screen flex flex-col items-center gap-y-6 px-4 py-12 animate-fade-up">
+      <div className="flex items-center gap-x-2 text-slate-400">
+        <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white flex items-center justify-center">
+          <Icon icon="tabler:microphone" className="text-sm" />
+        </div>
+        <span className="font-semibold tracking-tight">SpeakUp</span>
+      </div>
+
       <RoomInfo roomCode={roomCode} timeRemaining={timeRemaining} />
 
-      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col gap-y-6 items-center">
+      <div className="relative w-full max-w-md overflow-hidden bg-white rounded-2xl shadow-sm border border-slate-200 p-8 flex flex-col gap-y-6 items-center">
+        <div
+          className={clsx(
+            'absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r',
+            listening ? 'from-emerald-400 to-teal-500' : 'from-rose-400 to-rose-500',
+          )}
+        />
+
         <div className="flex rounded-lg overflow-hidden border border-slate-200">
           <button
             className={clsx(
               'px-4 py-1.5 text-sm font-semibold transition-colors',
               audioPipelineMode === 'live'
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white'
                 : 'bg-white text-slate-600 hover:bg-slate-50',
             )}
             onClick={() => setAudioPipelineMode('live')}
@@ -110,7 +124,7 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
             className={clsx(
               'px-4 py-1.5 text-sm font-semibold transition-colors border-l border-slate-200',
               audioPipelineMode === 'prerecord'
-                ? 'bg-indigo-600 text-white'
+                ? 'bg-gradient-to-br from-indigo-500 to-fuchsia-500 text-white'
                 : 'bg-white text-slate-600 hover:bg-slate-50',
             )}
             onClick={() => setAudioPipelineMode('prerecord')}
@@ -118,18 +132,30 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
             Prerecord
           </button>
         </div>
-        <button
-          className={clsx(
-            'w-36 h-36 rounded-full text-white font-bold',
-            'text-6xl flex justify-center items-center shadow-sm',
-            'transition-colors duration-300',
-            listening ? 'bg-emerald-500' : 'bg-rose-500',
+
+        <div className="relative w-36 h-36 flex items-center justify-center">
+          {listening && (
+            <>
+              <span className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 animate-pulse-ring" />
+              <span
+                className="absolute inset-0 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 animate-pulse-ring"
+                style={{ animationDelay: '0.6s' }}
+              />
+            </>
           )}
-          onClick={handleClick}
-          aria-label={listening ? 'Stop listening' : 'Start listening'}
-        >
-          <Icon icon={listening ? 'tabler:volume' : 'tabler:volume-off'} />
-        </button>
+          <button
+            className={clsx(
+              'relative w-36 h-36 rounded-full text-white font-bold bg-gradient-to-br',
+              'text-6xl flex justify-center items-center shadow-lg',
+              'transition-all duration-300',
+              listening ? 'from-emerald-400 to-teal-500' : 'from-rose-400 to-rose-500 animate-breathe',
+            )}
+            onClick={handleClick}
+            aria-label={listening ? 'Stop listening' : 'Start listening'}
+          >
+            <Icon icon={listening ? 'tabler:volume' : 'tabler:volume-off'} />
+          </button>
+        </div>
 
         <p className="text-slate-500">{listening ? <>Tuning in&hellip;</> : 'Everyone is muted'}</p>
 
@@ -139,7 +165,7 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
           className={clsx(
             'px-5 py-2.5 rounded-xl font-semibold transition-all duration-200 shadow-sm border',
             listening && !cooldown
-              ? 'bg-amber-500 hover:bg-amber-600 text-white border-amber-600'
+              ? 'bg-gradient-to-br from-amber-400 to-orange-500 hover:brightness-105 text-white border-transparent'
               : 'bg-slate-100 text-slate-400 border-slate-200 cursor-not-allowed'
           )}
           disabled={!listening || cooldown}
@@ -155,14 +181,27 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
         </button>
 
         {/* Hint who we're hearing */}
-        {listening && playing && <p className="text-sm text-slate-400">Listening to {playing}&hellip;</p>}
+        {listening && playing && (
+          <div className="flex items-center gap-2 text-sm text-slate-400">
+            <span className="flex items-end gap-0.5 h-3">
+              {[0, 1, 2].map((i) => (
+                <span
+                  key={i}
+                  className="w-0.5 h-full bg-emerald-500 rounded-full animate-eq-bar"
+                  style={{ animationDelay: `${i * 0.15}s` }}
+                />
+              ))}
+            </span>
+            <span>Listening to {playing}&hellip;</span>
+          </div>
+        )}
 
         <audio ref={ref} preload="auto" />
       </div>
 
       <button
         type="button"
-        className="px-5 py-2.5 bg-rose-600 hover:bg-rose-700 text-white font-semibold rounded-xl transition-colors shadow-sm"
+        className="px-5 py-2.5 bg-gradient-to-br from-rose-500 to-rose-600 hover:brightness-105 text-white font-semibold rounded-xl transition-all shadow-sm"
         onClick={() => navigate('/')}
       >
         Leave
