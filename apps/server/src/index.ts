@@ -45,7 +45,7 @@ app.use('*', cors({
 // by every distinct room code. Wrapped so a logging failure (or an error that
 // somehow escapes Hono's own onError) never breaks the actual response.
 app.use('*', async (c, next) => {
-  const start = Date.now();
+  const start = performance.now();
   try {
     await next();
   } catch (err) {
@@ -54,7 +54,7 @@ app.use('*', async (c, next) => {
         method: c.req.method,
         path: c.req.routePath,
         statusCode: 500,
-        durationMs: Date.now() - start,
+        durationMs: Math.round((performance.now() - start) * 100) / 100,
         timestamp: new Date(),
       });
     } catch {
@@ -67,7 +67,7 @@ app.use('*', async (c, next) => {
       method: c.req.method,
       path: c.req.routePath,
       statusCode: c.res.status,
-      durationMs: Date.now() - start,
+      durationMs: Math.round((performance.now() - start) * 100) / 100,
       timestamp: new Date(),
     });
   } catch {
