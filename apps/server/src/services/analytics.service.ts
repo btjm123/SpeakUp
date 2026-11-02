@@ -71,7 +71,12 @@ class AnalyticsService {
 
     // Persist after duration (for speak_end) is finalised above, so the
     // durable copy matches what getStats()/CSV export would compute.
-    eventsRepository.insertEvent(roomCode, event);
+    // A write failure here must never break the live WS session.
+    try {
+      eventsRepository.insertEvent(roomCode, event);
+    } catch (err) {
+      console.error('[analytics] failed to persist event:', err);
+    }
   }
 
   adjustSpeakingStartTime(roomCode: string, username: string, pauseDuration: number): void {

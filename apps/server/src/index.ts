@@ -13,6 +13,7 @@ import {
   handleClientErrors,
   handlePathNotFoundErrors,
 } from './internal/errorHandlers/handlers';
+import httpRequestsRepository from './repositories/http_requests.repository';
 import { registerWebsocketForServer } from './ws/server';
 
 // --- App setup ---------------------------------------------------------------
@@ -37,6 +38,42 @@ app.use('*', cors({
   credentials: true,   // set to false if you don’t use cookies/auth
   maxAge: 86400,
 }))
+
+// Track request counts / HTTP status codes for the system-metrics dashboard.
+// Uses routePath (the registered pattern, e.g. "/api/v1/rooms/:code/ttl") rather
+// than the resolved path, so requests group by endpoint instead of fragmenting
+// by every distinct room code. Wrapped so a logging failure (or an error that
+// somehow escapes Hono's own onError) never breaks the actual response.
+app.use('*', async (c, next) => {
+  const start = Date.now();
+  try {
+    await next();
+  } catch (err) {
+    try {
+      httpRequestsRepository.insertRequest({
+        method: c.req.method,
+        path: c.req.routePath,
+        statusCode: 500,
+        durationMs: Date.now() - start,
+        timestamp: new Date(),
+      });
+    } catch {
+      // Logging must never be the reason a request fails.
+    }
+    throw err;
+  }
+  try {
+    httpRequestsRepository.insertRequest({
+      method: c.req.method,
+      path: c.req.routePath,
+      statusCode: c.res.status,
+      durationMs: Date.now() - start,
+      timestamp: new Date(),
+    });
+  } catch {
+    // Logging must never be the reason a request fails.
+  }
+});
 
 // Basic routes
 app.get('/', (c) => c.text('Hello from secure server!')); // text can stay the same
