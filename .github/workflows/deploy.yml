@@ -48,7 +48,12 @@ jobs:
   deploy-server:
     runs-on: ubuntu-latest
     # Only redeploy the server when server/shared code actually changed.
-    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.modified, 'apps/server') || contains(github.event.head_commit.added, 'apps/server')
+    # Note: contains() on an array does an exact-element match, not a substring
+    # match — stringify to JSON first so "apps/server/src/x.ts" matches "apps/server".
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      contains(toJson(github.event.head_commit.modified), 'apps/server') ||
+      contains(toJson(github.event.head_commit.added), 'apps/server')
     steps:
       - uses: aws-actions/configure-aws-credentials@v4
         with:
