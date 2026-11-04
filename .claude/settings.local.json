@@ -20,7 +20,11 @@
       "Bash(aws configure agent-toolkit *)",
       "Bash(python3 *)",
       "Bash(curl -LsSf https://astral.sh/uv/install.sh)",
-      "Bash(sh)"
+      "Bash(sh)",
+      "mcp__excalidraw__create_scene",
+      "mcp__excalidraw__create_diagram",
+      "mcp__excalidraw__take_screenshot",
+      "Bash(xargs ls -la)"
     ]
   }
 }

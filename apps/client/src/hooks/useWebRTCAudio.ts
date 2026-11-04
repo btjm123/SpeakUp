@@ -965,6 +965,13 @@ export const useWebRTCAudio = (wsEndpoint: string) => {
     }
   }, []);
 
+  const setMicGain = useCallback((value: number) => {
+    const ws = wsRef.current;
+    if (ws && isOpenRef.current && ws.readyState === WebSocket.OPEN) {
+      ws.send(JSON.stringify({ type: 'set-mic-gain', value }));
+    }
+  }, []);
+
   const setAudioPipelineMode = useCallback((mode: 'live' | 'prerecord') => {
     setAudioPipelineModeState(mode);
     audioPipelineModeRef.current = mode;
@@ -1213,5 +1220,6 @@ export const useWebRTCAudio = (wsEndpoint: string) => {
     setAudioPipelineMode,
     audioPipelineMode,
     audioMode,
+    setMicGain,
   };
 };

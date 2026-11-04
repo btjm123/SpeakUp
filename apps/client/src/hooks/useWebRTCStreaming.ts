@@ -37,13 +37,16 @@ type SignalingMessage =
 // Flip back to false when WebRTC is working reliably again.
 const FORCE_MEDIA_RECORDER = true;
 
-// Reduce mic sensitivity to weaken feedback loops.
-// 0.2 ≈ −14 dB; balances feedback suppression with audibility.
-const MIC_GAIN = 0.2;
+// Default mic sensitivity to weaken feedback loops (e.g. two students
+// speaking from the same physical room picking up each other's playback).
+// 0.2 ≈ −14 dB; balances feedback suppression with audibility. The
+// instructor can adjust this live via the "directional gain" slider,
+// broadcast over the 'set-mic-gain' WS message.
+const DEFAULT_MIC_GAIN = 0.2;
 
-type GainHandle = { stream: MediaStream; dispose: () => void };
+type GainHandle = { stream: MediaStream; gainNode: GainNode; dispose: () => void };
 
-async function applyMicGain(raw: MediaStream): Promise<GainHandle | null> {
+async function applyMicGain(raw: MediaStream, initialGain: number): Promise<GainHandle | null> {
   try {
     const AudioCtx = window.AudioContext || (window as any).webkitAudioContext;
     if (!AudioCtx) return null;
@@ -58,11 +61,12 @@ async function applyMicGain(raw: MediaStream): Promise<GainHandle | null> {
     }
     const src = ctx.createMediaStreamSource(raw);
     const gain = ctx.createGain();
-    gain.gain.value = MIC_GAIN;
+    gain.gain.value = initialGain;
     const dest = ctx.createMediaStreamDestination();
     src.connect(gain).connect(dest);
     return {
       stream: dest.stream,
+      gainNode: gain,
       dispose: () => {
         try { src.disconnect(); } catch {}
         try { gain.disconnect(); } catch {}
@@ -107,6 +111,7 @@ export const useWebRTCStreaming = (
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const fallbackModeRef = useRef(false);
   const micGainRef = useRef<GainHandle | null>(null);
+  const micGainValueRef = useRef(DEFAULT_MIC_GAIN);
   const recorderChunksRef = useRef<Blob[]>([]);
   const sendFullBlobOnStopRef = useRef(false);
   const prerecordCaptureRef = useRef(false);
@@ -357,7 +362,7 @@ export const useWebRTCStreaming = (
 
     streamRef.current = stream;
     micGainRef.current?.dispose();
-    const gh = await applyMicGain(stream);
+    const gh = await applyMicGain(stream, micGainValueRef.current);
     micGainRef.current = gh;
     startMediaRecorder(gh?.stream ?? stream, false);
     console.log('[Streaming] Started with MediaRecorder (default mode)');
@@ -483,7 +488,7 @@ export const useWebRTCStreaming = (
               }
               streamRef.current = stream;
               micGainRef.current?.dispose();
-              const gh = await applyMicGain(stream);
+              const gh = await applyMicGain(stream, micGainValueRef.current);
               micGainRef.current = gh;
               // Match live pipeline behavior by streaming chunks continuously.
               // This avoids iPhone full-blob container incompatibilities in playback.
@@ -518,6 +523,16 @@ export const useWebRTCStreaming = (
 
         if (data.type === 'force-webrtc' && !FORCE_MEDIA_RECORDER) {
           stopMediaRecorderAndUseWebRTC();
+        }
+
+        if (data.type === 'set-mic-gain' && typeof data.value === 'number') {
+          const clamped = Math.max(0, Math.min(1, data.value));
+          micGainValueRef.current = clamped;
+          // Apply live if we're already capturing, so the instructor hears
+          // the change take effect immediately rather than next turn.
+          if (micGainRef.current?.gainNode) {
+            micGainRef.current.gainNode.gain.value = clamped;
+          }
         }
 
         if (data.type === 'need_rts') {

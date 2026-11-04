@@ -46,6 +46,12 @@ export class MessageHandler {
   private prerecordPlaying = false;
   private prerecordCurrentSpeaker: string | null = null;
 
+  // Instructor-adjustable mic gain, broadcast to students to curb the
+  // feedback loop that occurs when two speakers are in the same room
+  // (their mics pick up each other's playback). 0.2 matches the client's
+  // previous hardcoded default.
+  private micGain: number = 0.2;
+
   constructor(
     private readonly roomCode: string,
     private readonly onIncomingFile?: (filename: string, data: Buffer) => void,
@@ -80,6 +86,9 @@ export class MessageHandler {
           }
           if (signal.type === 'update-priority') {
             return this.handleUpdatePriority.bind(this, signal.priority);
+          }
+          if (signal.type === 'set-mic-gain') {
+            return this.handleSetMicGain.bind(this, signal.value);
           }
           return this.handleWebRTCSignaling.bind(this, signal);
         }
@@ -135,16 +144,21 @@ export class MessageHandler {
     }
   }
 
-  private trackClient(ws: WebSocket, key: string, priority: number = 0) { 
+  private trackClient(ws: WebSocket, key: string, priority: number = 0) {
+    const isNewClient = !this.clientKeyMap[key];
     this.clientKeyMap[key] = ws;
     // Use existing manualOrder if client already exists (e.g., reconnecting)
     const existingInfo = this.clientInfoMap[key];
-    this.clientInfoMap[key] = { 
-      ws, 
-      priority, 
+    this.clientInfoMap[key] = {
+      ws,
+      priority,
       joinTime: existingInfo?.joinTime ?? new Date(),
       manualOrder: existingInfo?.manualOrder,
     };
+    // Sync the instructor's current mic gain setting to newly (re)connected students.
+    if (isNewClient && ws.readyState === WebSocket.OPEN) {
+      try { ws.send(JSON.stringify({ type: 'set-mic-gain', value: this.micGain })); } catch {}
+    }
   }
   
   private updateManualOrder() {
@@ -1402,6 +1416,22 @@ export class MessageHandler {
 
     // Send queue update
     this.sendQueueUpdate();
+  };
+
+  private handleSetMicGain = (value: number, ws: WebSocket) => {
+    // Only instructor can adjust mic gain
+    if (!this.instructorConnections.has(ws) || ws.readyState !== WebSocket.OPEN) {
+      return;
+    }
+    if (typeof value !== 'number' || Number.isNaN(value)) return;
+    const clamped = Math.max(0, Math.min(1, value));
+    this.micGain = clamped;
+
+    for (const client of Object.values(this.clientKeyMap)) {
+      if (client.readyState === WebSocket.OPEN) {
+        try { client.send(JSON.stringify({ type: 'set-mic-gain', value: clamped })); } catch {}
+      }
+    }
   };
 
   private handleUpdatePriority = (priority: number, ws: WebSocket) => {

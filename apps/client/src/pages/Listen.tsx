@@ -32,10 +32,24 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
     setDefaultAudioMode,
     setAudioPipelineMode,
     audioPipelineMode,
+    setMicGain,
   } = useWebRTCAudio(`${WS_PROTOCOL}://${SERVER_HOST}/ws/${roomCode}`);
-  
+
   const [queueOpen, setQueueOpen] = useState(false);
   const [analyticsOpen, setAnalyticsOpen] = useState(false);
+
+  // Directional gain: lowers student mic sensitivity to curb the feedback
+  // loop that happens when two students are in the same physical room and
+  // pick up each other's playback. 0.2 matches the server/client default.
+  const [micGain, setMicGainValue] = useState(0.2);
+  const handleMicGainChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      const value = Number(e.target.value);
+      setMicGainValue(value);
+      setMicGain(value);
+    },
+    [setMicGain],
+  );
 
   const handleClick = useCallback(() => {
     if (listening) {
@@ -206,6 +220,33 @@ const ListenBody: React.FC<Props> = ({ roomCode, expiresAt }) => {
       >
         Leave
       </button>
+
+      {/* Directional gain: reduces student mic sensitivity to cut feedback
+          when two students are speaking from the same room. */}
+      <div className="w-full max-w-md bg-white rounded-2xl shadow-sm border border-slate-200 p-6 flex flex-col gap-y-3">
+        <div className="flex items-center justify-between">
+          <label htmlFor="directional-gain" className="flex items-center gap-x-2 text-sm font-semibold text-slate-700">
+            <Icon icon="tabler:adjustments-horizontal" className="text-lg text-slate-400" />
+            Directional Gain
+          </label>
+          <span className="text-sm font-mono text-slate-500">{Math.round(micGain * 100)}%</span>
+        </div>
+        <input
+          id="directional-gain"
+          type="range"
+          min={0}
+          max={1}
+          step={0.05}
+          value={micGain}
+          onChange={handleMicGainChange}
+          className="w-full accent-indigo-500"
+          aria-label="Directional gain"
+        />
+        <p className="text-xs text-slate-400">
+          Lower this if two students in the same room are picking up each
+          other&apos;s audio and causing feedback.
+        </p>
+      </div>
 
       {/* Queue Management, Analytics, and Settings - Stacked */}
       <div className="fixed bottom-4 right-4 z-50 flex flex-col gap-3">
